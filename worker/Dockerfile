@@ -1,4 +1,4 @@
-FROM maven:3.5-jdk-11-alpine AS build
+FROM maven:3.8.5-openjdk-11 AS build
 
 WORKDIR /code
 
