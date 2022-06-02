@@ -14,4 +14,4 @@ FROM openjdk:11.0-jre-buster
 
 COPY --from=build /code/target/worker-jar-with-dependencies.jar /
 
-CMD ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-jar", "/worker-jar-with-dependencies.jar"]
+CMD ["java", "-jar", "/worker-jar-with-dependencies.jar"]
