@@ -10,8 +10,9 @@ class Worker {
     try {
       Jedis redis = connectToRedis("redis");
       
-      String dbname = env.getOrDefault("PG_DBNAME", "postgres");
-      Connection dbConn = connectToDB("db", dbname);
+      String dbname = System.getenv().getOrDefault("PG_DBNAME", "postgres");
+      String dbhost = System.getenv().getOrDefault("PG_HOST", "db");
+      Connection dbConn = connectToDB(dbhost, dbname);
 
       System.err.println("Watching vote queue");
 
