@@ -43,7 +43,7 @@ jobs:
         with:
           context: ./vote
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ github.actor }}/voting_app_rest:${{ github.ref_name }}
+          tags: ${{ env.REGISTRY }}/${{ github.actor }}/voting_app_rest:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
           
       - name: Build and push Worker app
@@ -52,7 +52,7 @@ jobs:
           context: ./worker
           file: Dockerfile.j
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ github.actor }}/voting_app_worker:${{ github.ref_name }}
+          tags: ${{ env.REGISTRY }}/${{ github.actor }}/voting_app_worker:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
           
       - name: Build and push Result app
@@ -60,5 +60,5 @@ jobs:
         with:
           context: ./result
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ github.actor }}/voting_app_result:${{ github.ref_name }}
+          tags: ${{ env.REGISTRY }}/${{ github.actor }}/voting_app_result:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
