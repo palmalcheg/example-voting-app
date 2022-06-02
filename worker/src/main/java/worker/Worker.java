@@ -66,9 +66,10 @@ class Worker {
     Connection conn = null;
 
     try {
-      String dbname = System.getenv("PG_DBNAME", "postgres");
-      String user = System.getenv("PG_USERNAME", "postgres");
-      String password = System.getenv("PG_PASSWORD", "postgres");
+      var env = System.getenv();
+      String dbname = env.getOrDefault("PG_DBNAME", "postgres");
+      String user = env.getOrDefault("PG_USERNAME", "postgres");
+      String password = env.getOrDefault("PG_PASSWORD", "postgres");
       Class.forName("org.postgresql.Driver");
       String url = "jdbc:postgresql://" + host + "/"+ dbname;
 
