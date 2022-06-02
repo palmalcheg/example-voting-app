@@ -50,7 +50,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./worker
-          file: Dockerfile.j
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ github.actor }}/voting_app_worker:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
