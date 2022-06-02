@@ -10,7 +10,7 @@ RUN ["mvn", "verify"]
 COPY ["src/main", "/code/src/main"]
 RUN ["mvn", "package"]
 
-FROM openjdk:11-jre-alpine
+FROM openjdk:11.0-jre-buster
 
 COPY --from=build /code/target/worker-jar-with-dependencies.jar /
 
