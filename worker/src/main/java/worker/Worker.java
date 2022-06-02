@@ -70,8 +70,9 @@ class Worker {
       String dbname = env.getOrDefault("PG_DBNAME", "postgres");
       String user = env.getOrDefault("PG_USERNAME", "postgres");
       String password = env.getOrDefault("PG_PASSWORD", "postgres");
+      String ssl = env.getOrDefault("PG_SSLMODE", "false");
       Class.forName("org.postgresql.Driver");
-      String url = "jdbc:postgresql://" + host + "/"+ dbname;
+      String url = "jdbc:postgresql://" + host + "/"+ dbname+"?ssl="+ssl;
 
       while (conn == null) {
         try { 
@@ -81,9 +82,9 @@ class Worker {
           sleep(1000);
         }
       }
-
-      PreparedStatement st = conn.prepareStatement(
-        "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)");
+      String initdb = env.getOrDefault( "INIT_DB" , 
+                                        "CREATE TABLE IF NOT EXISTS "+dbname+".votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
+      PreparedStatement st = conn.prepareStatement(initdb);
       st.executeUpdate();
 
     } catch (ClassNotFoundException e) {
