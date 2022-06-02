@@ -66,13 +66,15 @@ class Worker {
     Connection conn = null;
 
     try {
-
+      String dbname = System.getenv("PG_DBNAME", "postgres");
+      String user = System.getenv("PG_USERNAME", "postgres");
+      String password = System.getenv("PG_PASSWORD", "postgres");
       Class.forName("org.postgresql.Driver");
-      String url = "jdbc:postgresql://" + host + "/postgres";
+      String url = "jdbc:postgresql://" + host + "/"+ dbname;
 
       while (conn == null) {
-        try {
-          conn = DriverManager.getConnection(url, "postgres", "postgres");
+        try { 
+          conn = DriverManager.getConnection(url, username, password );
         } catch (SQLException e) {
           System.err.println("Waiting for db");
           sleep(1000);
