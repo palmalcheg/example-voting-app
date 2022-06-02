@@ -9,7 +9,9 @@ class Worker {
   public static void main(String[] args) {
     try {
       Jedis redis = connectToRedis("redis");
-      Connection dbConn = connectToDB("db");
+      
+      String dbname = env.getOrDefault("PG_DBNAME", "postgres");
+      Connection dbConn = connectToDB("db", dbname);
 
       System.err.println("Watching vote queue");
 
@@ -20,7 +22,7 @@ class Worker {
         String vote = voteData.getString("vote");
 
         System.err.printf("Processing vote for '%s' by '%s'\n", vote, voterID);
-        updateVote(dbConn, voterID, vote);
+        updateVote(dbConn, dbname, voterID, vote);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -28,9 +30,9 @@ class Worker {
     }
   }
 
-  static void updateVote(Connection dbConn, String voterID, String vote) throws SQLException {
+  static void updateVote(Connection dbConn,String dbname, String voterID, String vote) throws SQLException {
     PreparedStatement insert = dbConn.prepareStatement(
-      "INSERT INTO votes (id, vote) VALUES (?, ?)");
+      "INSERT INTO "+dbname+".votes (id, vote) VALUES (?, ?)");
     insert.setString(1, voterID);
     insert.setString(2, vote);
 
@@ -38,7 +40,7 @@ class Worker {
       insert.executeUpdate();
     } catch (SQLException e) {
       PreparedStatement update = dbConn.prepareStatement(
-        "UPDATE votes SET vote = ? WHERE id = ?");
+        "UPDATE "+dbname+".votes SET vote = ? WHERE id = ?");
       update.setString(1, vote);
       update.setString(2, voterID);
       update.executeUpdate();
@@ -62,12 +64,11 @@ class Worker {
     return conn;
   }
 
-  static Connection connectToDB(String host) throws SQLException {
+  static Connection connectToDB(String host, String dbname) throws SQLException {
     Connection conn = null;
 
     try {
       var env = System.getenv();
-      String dbname = env.getOrDefault("PG_DBNAME", "postgres");
       String user = env.getOrDefault("PG_USERNAME", "postgres");
       String password = env.getOrDefault("PG_PASSWORD", "postgres");
       String ssl = env.getOrDefault("PG_SSLMODE", "false");
