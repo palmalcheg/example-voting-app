@@ -96,7 +96,7 @@ class Worker {
     }
     finally {
       if (conn!=null)
-          conn.close()
+          conn.close();
     }
 
     System.err.println("Connected to db");
