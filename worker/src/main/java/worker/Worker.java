@@ -74,7 +74,7 @@ class Worker {
       String password = env.getOrDefault("PG_PASSWORD", "postgres");
       String ssl = env.getOrDefault("PG_SSLMODE", "false");
       Class.forName("org.postgresql.Driver");
-      String url = "jdbc:postgresql://" + host + "/"+ dbname+"?ssl="+ssl;
+      String url = "jdbc:postgresql://" + host + "/"+ dbname+"?sslfactory=org.postgresql.ssl.NonValidatingFactory&ssl="+ssl;
 
       while (conn == null) {
         try { 
