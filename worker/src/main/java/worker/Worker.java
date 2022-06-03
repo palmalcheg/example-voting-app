@@ -87,13 +87,14 @@ class Worker {
       String initdb = env.getOrDefault( "INIT_DB" , 
                                         "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
       PreparedStatement st = conn.prepareStatement(initdb);
-      st.executeUpdate();
-    } catch (ClassNotFoundException e) {
+      if ( st.executeUpdate() == 0 )
+          throw new IllegalStateException("Failed to create vote table with "+initdb);
+    } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
     }    
 
-    System.err.println("Connected to db");
+    System.err.println("Connected to "+url(dbname));
     return conn;
   }
 
