@@ -67,17 +67,20 @@ class Worker {
 
   static Connection connectToDB(String host, String dbname) throws SQLException {
     Connection conn = null;
+    
+    
     try {
       var env = System.getenv();
       String user = env.getOrDefault("PG_USERNAME", "postgres");
       String password = env.getOrDefault("PG_PASSWORD", "postgres");
       String ssl = env.getOrDefault("PG_SSLMODE", "false");
       Class.forName("org.postgresql.Driver");
-      var url = db -> "jdbc:postgresql://" + host + "/"+db+"?sslfactory=org.postgresql.ssl.NonValidatingFactory&ssl="+ssl;
+
+      var url = "jdbc:postgresql://" + host + "/"+dbname+"?sslfactory=org.postgresql.ssl.NonValidatingFactory&ssl="+ssl;
 
       while (conn == null) {
         try { 
-          conn = DriverManager.getConnection(url(dbname), user , password );          
+          conn = DriverManager.getConnection( url , user , password );          
         } catch (SQLException e) {
           e.printStackTrace();
           System.err.println("Waiting for db");
@@ -94,7 +97,7 @@ class Worker {
       System.exit(1);
     }    
 
-    System.err.println("Connection details : "+url(dbname));
+    System.err.println("Connection details : " + conn.getClientInfo());
     return conn;
   }
 
