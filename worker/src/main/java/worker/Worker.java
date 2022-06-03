@@ -33,7 +33,7 @@ class Worker {
 
   static void updateVote(Connection dbConn,String dbname, String voterID, String vote) throws SQLException {
     PreparedStatement insert = dbConn.prepareStatement(
-      "INSERT INTO "+dbname+".votes (id, vote) VALUES (?, ?)");
+      "INSERT INTO votes (id, vote) VALUES (?, ?)");
     insert.setString(1, voterID);
     insert.setString(2, vote);
 
@@ -41,7 +41,7 @@ class Worker {
       insert.executeUpdate();
     } catch (SQLException e) {
       PreparedStatement update = dbConn.prepareStatement(
-        "UPDATE "+dbname+".votes SET vote = ? WHERE id = ?");
+        "UPDATE votes SET vote = ? WHERE id = ?");
       update.setString(1, vote);
       update.setString(2, voterID);
       update.executeUpdate();
@@ -85,7 +85,7 @@ class Worker {
         }
       }
       String initdb = env.getOrDefault( "INIT_DB" , 
-                                        "CREATE TABLE IF NOT EXISTS "+dbname+".votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
+                                        "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
       PreparedStatement st = conn.prepareStatement(initdb);
       st.executeUpdate();
     } catch (ClassNotFoundException e) {
