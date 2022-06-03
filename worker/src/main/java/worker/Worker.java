@@ -67,18 +67,18 @@ class Worker {
 
   static Connection connectToDB(String host, String dbname) throws SQLException {
     Connection conn = null;
-
+    Connection dbconn = null;
     try {
       var env = System.getenv();
       String user = env.getOrDefault("PG_USERNAME", "postgres");
       String password = env.getOrDefault("PG_PASSWORD", "postgres");
       String ssl = env.getOrDefault("PG_SSLMODE", "false");
       Class.forName("org.postgresql.Driver");
-      String url = "jdbc:postgresql://" + host + "/postgres?sslfactory=org.postgresql.ssl.NonValidatingFactory&ssl="+ssl;
+      var url = db -> "jdbc:postgresql://" + host + "/"+db+"?sslfactory=org.postgresql.ssl.NonValidatingFactory&ssl="+ssl;
 
       while (conn == null) {
         try { 
-          conn = DriverManager.getConnection(url, user , password );
+          conn = DriverManager.getConnection(url("postgres"), user , password );          
         } catch (SQLException e) {
           e.printStackTrace();
           System.err.println("Waiting for db");
@@ -89,14 +89,18 @@ class Worker {
                                         "CREATE TABLE IF NOT EXISTS "+dbname+".votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
       PreparedStatement st = conn.prepareStatement(initdb);
       st.executeUpdate();
-
+      dbconn = DriverManager.getConnection(url(dbname), user , password );
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
       System.exit(1);
     }
+    finally {
+      if (conn!=null)
+          conn.close()
+    }
 
     System.err.println("Connected to db");
-    return conn;
+    return dbconn;
   }
 
   static void sleep(long duration) {
