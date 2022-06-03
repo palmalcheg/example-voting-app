@@ -90,8 +90,9 @@ class Worker {
       String initdb = env.getOrDefault( "INIT_DB" , 
                                         "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
       PreparedStatement st = conn.prepareStatement(initdb);
-      if ( st.executeUpdate() == 0 )
-          throw new IllegalStateException("Failed to create vote table with "+initdb);
+      if ( st.executeUpdate() == 0 ) {
+           System.err.println("Failed to create vote table with "+initdb);
+      }
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
