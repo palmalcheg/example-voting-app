@@ -94,7 +94,7 @@ class Worker {
       System.exit(1);
     }    
 
-    System.err.println("Connected to "+url(dbname));
+    System.err.println("Connected to : "+url(dbname));
     return conn;
   }
 
