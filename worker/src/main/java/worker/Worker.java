@@ -67,7 +67,6 @@ class Worker {
 
   static Connection connectToDB(String host, String dbname) throws SQLException {
     Connection conn = null;
-    Connection dbconn = null;
     try {
       var env = System.getenv();
       String user = env.getOrDefault("PG_USERNAME", "postgres");
@@ -78,7 +77,7 @@ class Worker {
 
       while (conn == null) {
         try { 
-          conn = DriverManager.getConnection(url("postgres"), user , password );          
+          conn = DriverManager.getConnection(url(dbname), user , password );          
         } catch (SQLException e) {
           e.printStackTrace();
           System.err.println("Waiting for db");
@@ -89,18 +88,13 @@ class Worker {
                                         "CREATE TABLE IF NOT EXISTS "+dbname+".votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
       PreparedStatement st = conn.prepareStatement(initdb);
       st.executeUpdate();
-      dbconn = DriverManager.getConnection(url(dbname), user , password );
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
       System.exit(1);
-    }
-    finally {
-      if (conn!=null)
-          conn.close();
-    }
+    }    
 
     System.err.println("Connected to db");
-    return dbconn;
+    return conn;
   }
 
   static void sleep(long duration) {
