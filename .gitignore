@@ -3,4 +3,7 @@ project.lock.json
 bin/
 obj/
 .vs/
+.classpath
+.project
 node_modules/
+*target/*
