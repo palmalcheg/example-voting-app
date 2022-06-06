@@ -12,7 +12,9 @@ class Worker {
       
       String dbname = System.getenv().getOrDefault("PG_DBNAME", "postgres");
       String dbhost = System.getenv().getOrDefault("PG_HOST", "db");
-      Connection dbConn = connectToDB(dbhost, dbname);
+      try (Connection dbConn = connectToDB(dbhost, dbname, true)){
+          // just init and auto close
+      };
 
       System.err.println("Watching vote queue");
 
@@ -23,7 +25,9 @@ class Worker {
         String vote = voteData.getString("vote");
 
         System.err.printf("Processing vote for '%s' by '%s'\n", vote, voterID);
-        updateVote(dbConn, dbname, voterID, vote);
+        try (Connection dbConn = connectToDB(dbhost, dbname, false)){
+             updateVote(dbConn, dbname, voterID, vote);
+        };         
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -65,7 +69,7 @@ class Worker {
     return conn;
   }
 
-  static Connection connectToDB(String host, String dbname) throws SQLException {
+  static Connection connectToDB(String host, String dbname, boolean init) throws SQLException {
     Connection conn = null;
     
     
@@ -87,11 +91,12 @@ class Worker {
           sleep(1000);
         }
       }
+      if (!init)
+         return conn;
       String initdb = env.getOrDefault( "INIT_DB" , 
                                         "CREATE TABLE IF NOT EXISTS votes (id VARCHAR(255) NOT NULL UNIQUE, vote VARCHAR(255) NOT NULL)" );
       PreparedStatement st = conn.prepareStatement(initdb);
-      if ( st.executeUpdate() == 0 )
-          throw new IllegalStateException("Failed to create vote table with "+initdb);
+      st.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
