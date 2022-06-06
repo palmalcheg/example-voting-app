@@ -6,4 +6,4 @@ obj/
 .classpath
 .project
 node_modules/
-*target/*
+worker/target/*
