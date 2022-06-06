@@ -3,7 +3,7 @@ project.lock.json
 bin/
 obj/
 .vs/
-.classpath
-.project
+worker/.classpath
+worker/.project
 node_modules/
 worker/target/*
